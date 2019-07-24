@@ -39,7 +39,7 @@ $itemList->setItems([$item]);
 //create details 
 $details = new Details();
 $details->setShipping($shipping)
-        ->setSubtotal($total);
+        ->setSubtotal($price);
 
 //create amount details 
 $amount = new Amount();
@@ -63,3 +63,20 @@ $payment->setIntent('sale')
         ->setPayer($payer)
         ->setRedirectUrls($redirectUrls)
         ->setTransactions([$transaction]);
+
+try {
+
+    $payment->create($paypal);
+
+} catch(PayPal\Exception\PayPalConnectionException $ex){
+    echo $ex->getCode(); // Prints the Error Code
+    echo $ex->getData(); // Prints the detailed error message 
+    die($ex);
+} catch (Exception $e) {
+    die($e);
+}
+
+$approvalUrl = $payment->getApprovalLink();
+
+header("Location: {$approvalUrl}");
+
